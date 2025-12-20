@@ -3,47 +3,47 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/GuilhermeFerza/content-platform-api/internal/model"
+	"github.com/GuilhermeFerza/content-platform-api/internal/service"
 )
 
-type Task struct {
-	ID    int    `json:"id"`
-	Title string `json:"title"`
-	Done  bool   `json:"done"`
+type TaskHandler struct {
+	service *service.TaskService
 }
 
-var tasks = []Task{
-	{ID: 1, Title: "Aprender Go", Done: false},
-	{ID: 2, Title: "Criar uma API", Done: true},
-	{ID: 3, Title: "Teste", Done: true},
+func NewTaskHandler(s *service.TaskService) *TaskHandler {
+	return &TaskHandler{service: s}
 }
 
-func Tasks(w http.ResponseWriter, r *http.Request) {
+func (h *TaskHandler) Tasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	switch r.Method {
+
 	case http.MethodGet:
+		tasks := h.service.GetAll()
 		json.NewEncoder(w).Encode(tasks)
 
 	case http.MethodPost:
-		var newTask Task
+		defer r.Body.Close()
 
-		err := json.NewDecoder(r.Body).Decode(&newTask)
-		if err != nil {
+		var task model.Task
+
+		if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
 			http.Error(w, "Invalid JSON", http.StatusBadRequest)
 			return
 		}
 
-		if newTask.Title == "" {
+		if task.Title == "" {
 			http.Error(w, "Title is required", http.StatusBadRequest)
 			return
 		}
 
-		newTask.ID = len(tasks) + 1
-
-		tasks = append(tasks, newTask)
+		created := h.service.Create(task)
 
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(newTask)
+		json.NewEncoder(w).Encode(created)
 
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
