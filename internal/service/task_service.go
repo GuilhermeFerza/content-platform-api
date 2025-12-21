@@ -1,6 +1,8 @@
 package service
 
-import "github.com/GuilhermeFerza/content-platform-api/internal/model"
+import (
+	"github.com/GuilhermeFerza/content-platform-api/internal/model"
+)
 
 type TaskService struct {
 	tasks []model.Task
@@ -23,4 +25,14 @@ func (s *TaskService) Create(task model.Task) model.Task {
 	task.ID = len(s.tasks) + 1
 	s.tasks = append(s.tasks, task)
 	return task
+}
+
+func (s *TaskService) DeleteByID(id int) bool {
+	for i, task := range s.tasks {
+		if task.ID == id {
+			s.tasks = append(s.tasks[:i], s.tasks[i+1:]...)
+			return true
+		}
+	}
+	return false
 }

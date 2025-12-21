@@ -15,6 +15,7 @@ func main() {
 	taskHandler := handler.NewTaskHandler(taskService)
 
 	mux.HandleFunc("/tasks", taskHandler.Tasks)
+	mux.HandleFunc("/tasks/", taskHandler.TaskByID)
 
 	log.Println("Servidor rodando na porta 8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))
