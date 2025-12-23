@@ -36,3 +36,15 @@ func (s *TaskService) DeleteByID(id int) bool {
 	}
 	return false
 }
+
+func (s *TaskService) UpdateByID(id int, updated model.Task) bool {
+	for i, task := range s.tasks {
+		if task.ID == id {
+			s.tasks[i].Title = updated.Title
+			s.tasks[i].Done = updated.Done
+			return true
+		}
+	}
+
+	return false
+}

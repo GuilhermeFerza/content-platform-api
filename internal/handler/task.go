@@ -91,6 +91,7 @@ func (h *TaskHandler) TaskByID(w http.ResponseWriter, r *http.Request) {
 		}
 
 		ok := h.service.UpdateByID(id, updated)
+
 		if !ok {
 			http.Error(w, "Task not found", http.StatusNotFound)
 			return
