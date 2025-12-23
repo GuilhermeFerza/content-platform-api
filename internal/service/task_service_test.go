@@ -47,3 +47,17 @@ func TestTaskService_DeleteByID(t *testing.T) {
 		t.Errorf("expected 1 task remaining, got %d", len(service.GetAll()))
 	}
 }
+
+func TestTaskService_UpdatedByID(t *testing.T) {
+	service := NewTaskService()
+
+	updatedTask := model.Task{
+		Title: "Tarefa Atualizada",
+		Done:  true,
+	}
+	ok := service.UpdateByID(2, updatedTask)
+	if !ok {
+		t.Errorf("expected task to be updated")
+	}
+
+}
