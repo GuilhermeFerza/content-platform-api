@@ -80,6 +80,23 @@ func (h *TaskHandler) TaskByID(w http.ResponseWriter, r *http.Request) {
 
 		w.WriteHeader(http.StatusNoContent)
 
+	case http.MethodPut:
+		defer r.Body.Close()
+
+		var updated model.Task
+
+		if err := json.NewDecoder(r.Body).Decode(&updated); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		ok := h.service.UpdateByID(id, updated)
+		if !ok {
+			http.Error(w, "Task not found", http.StatusNotFound)
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
